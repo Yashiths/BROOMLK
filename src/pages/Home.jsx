@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 // Component imports
 import Navbar from '../components/Navbar';
 import SpecsBar from '../components/SpecsBar';
+import Footer from '../components/Footer';
 
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -25,9 +26,9 @@ function CameraController() {
       }
     });
 
-    // Clean tracking shot that moves from front to the perfect side profile and stops there
+    // Tracking shot that locks frame on side-profile during studio phase
     tl.to(camera.position, { x: 0, y: 1, z: 5 })
-      .to(camera.position, { x: 2.2, y: 0.4, z: 4.0 });
+      .to(camera.position, { x: 2.2, y: 0.4, z: 4.0 }); 
 
   }, [camera]);
 
@@ -52,7 +53,6 @@ function PorscheModel({ activeColor }) {
         if (child.isMesh) {
           const matName = child.material.name.toLowerCase();
 
-          // Smoothly updates the primary car paint color on state change
           if (matName.includes('paint') || matName.includes('body') || matName.includes('car_paint') || matName.includes('exterior')) {
             child.material.color.set(colorMap[activeColor]);
           }
@@ -71,7 +71,6 @@ function PorscheModel({ activeColor }) {
       }
     });
 
-    // Rotates smoothly to the best studio profile angle and locks
     tl.to(carRef.current.rotation, { y: Math.PI * 0.4 });
     tl.to(carRef.current.position, { x: -0.6, z: 0.2 }, 0);
 
@@ -87,24 +86,22 @@ export default function PorscheShowcase() {
   const specCardRef1 = useRef();
 
   useLayoutEffect(() => {
-    // 1. Initial Load Reveal Animation for Hero Typography (Fades and rises elegantly)
+    // Hero entry transition
     gsap.fromTo(titleRef.current,
       { opacity: 0, y: 60 },
       { opacity: 1, y: 0, duration: 1.6, ease: 'power4.out' }
     );
 
-    // 2. Ultra-Smooth Scroll Triggered Cinematic Reveal for the Configurator Info Card
+    // Dynamic scroll trigger fade for card
     gsap.fromTo(specCardRef1.current,
       { opacity: 0, y: 100, scale: 0.95 },
       {
-        opacity: 1,
-        y: 0,
-        scale: 1,
+        opacity: 1, y: 0, scale: 1,
         scrollTrigger: {
           trigger: specCardRef1.current,
-          start: "top 90%",       // Animation starts when card top hits 90% of screen height
-          end: "top 45%",         // Reaches full solid state when it arrives at framing zone
-          scrub: 1.2,             // Ties fluidly to the touch/mouse scroll speed
+          start: "top 90%",
+          end: "top 45%",
+          scrub: 1.2,
           toggleActions: "play reverse play reverse"
         }
       }
@@ -113,7 +110,7 @@ export default function PorscheShowcase() {
   }, []);
 
   return (
-    <div className="scroll-container bg-[#050505] text-white relative select-none font-sans overflow-x-hidden" style={{ height: '180vh' }}>
+    <div className="scroll-container bg-[#050505] text-white relative select-none font-sans overflow-x-hidden" style={{ height: '280vh' }}>
 
       <Navbar />
 
@@ -131,19 +128,18 @@ export default function PorscheShowcase() {
           <CameraController />
         </Canvas>
 
-        {/* CINEMATIC SYMMETRICAL VIGNETTE OVERLAYS */}
+        {/* CINEMATIC OVERLAYS */}
         <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-r from-black/80 via-transparent to-black/80" />
         <div className="absolute inset-0 z-20 pointer-events-none bg-gradient-to-b from-black/40 via-transparent to-black/90" />
       </div>
 
-      {/* CONFIGURATOR SPECS BAR DASHBOARD */}
       <SpecsBar activeColor={activeColor} setActiveColor={setActiveColor} />
 
       {/* SCROLLABLE HTML CONTENT OVERLAY */}
       <div className="relative w-full max-w-7xl mx-auto px-6 md:px-16 z-30 pointer-events-none">
 
-        {/* Section 1: Modification Studio Hero Intro */}
-        <section className="h-screen flex flex-col justify-center items-start">
+        {/* Section 1: Hero Studio Branding */}
+        <section id="overview" className="h-screen flex flex-col justify-center items-start">
           <div ref={titleRef} className="pointer-events-auto select-none drop-shadow-[0_10px_20px_rgba(0,0,0,1)]">
             <span className="text-xs md:text-sm text-cyan-400 font-bold tracking-[0.3em] uppercase mb-3 block">
               BROOMLK CUSTOMS
@@ -157,8 +153,8 @@ export default function PorscheShowcase() {
           </div>
         </section>
 
-        {/* Section 2: Virtual Modification Zone */}
-        <section className="h-screen flex flex-col justify-center items-end">
+        {/* Section 2: Virtual Configurator Zone */}
+        <section id="design" className="h-screen flex flex-col justify-center items-end">
           <div ref={specCardRef1} className="pointer-events-auto w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 p-8 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] -translate-y-8">
             <span className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] uppercase">01 / VIRTUAL CONFIGURATOR</span>
             <h2 className="text-3xl font-black text-white uppercase mt-1 mb-4">Premium Wraps & Styling</h2>
@@ -170,6 +166,9 @@ export default function PorscheShowcase() {
             </p>
           </div>
         </section>
+
+        {/* Section 3: Luxury Dynamic Consultation Sheet & Footer */}
+        <Footer activeColor={activeColor} />
 
       </div>
 

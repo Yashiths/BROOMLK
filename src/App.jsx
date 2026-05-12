@@ -1,15 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import ProductView from "./pages/ProductView";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import PorscheShowcase from './pages/Home';
+import StudioPage from './pages/StudioPage'; // We will create this next
 
 function App() {
   return (
-    <Router>
+    <div className="App bg-[#050505] min-h-screen text-white">
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/configure" element={<ProductView />} />
+        <Route path="/" element={<PorscheShowcase />} />
+        <Route path="/studio" element={<StudioPage />} />
       </Routes>
-    </Router>
+    </div>
   );
 }
 
