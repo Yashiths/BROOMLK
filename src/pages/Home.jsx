@@ -87,20 +87,25 @@ export default function PorscheShowcase() {
   const specCardRef1 = useRef();
 
   useLayoutEffect(() => {
+    // 1. Initial Load Reveal Animation for Hero Typography (Fades and rises elegantly)
     gsap.fromTo(titleRef.current,
-      { opacity: 0, y: 40 },
-      { opacity: 1, y: 0, duration: 1.2, ease: 'power4.out' }
+      { opacity: 0, y: 60 },
+      { opacity: 1, y: 0, duration: 1.6, ease: 'power4.out' }
     );
 
+    // 2. Ultra-Smooth Scroll Triggered Cinematic Reveal for the Configurator Info Card
     gsap.fromTo(specCardRef1.current,
-      { opacity: 0, y: 40 },
+      { opacity: 0, y: 100, scale: 0.95 },
       {
-        opacity: 1, y: 0,
+        opacity: 1,
+        y: 0,
+        scale: 1,
         scrollTrigger: {
           trigger: specCardRef1.current,
-          start: "top 85%",
-          end: "top 45%",
-          scrub: 1,
+          start: "top 90%",       // Animation starts when card top hits 90% of screen height
+          end: "top 45%",         // Reaches full solid state when it arrives at framing zone
+          scrub: 1.2,             // Ties fluidly to the touch/mouse scroll speed
+          toggleActions: "play reverse play reverse"
         }
       }
     );
@@ -137,25 +142,31 @@ export default function PorscheShowcase() {
       {/* SCROLLABLE HTML CONTENT OVERLAY */}
       <div className="relative w-full max-w-7xl mx-auto px-6 md:px-16 z-30 pointer-events-none">
 
-        {/* Section 1: Hero Intro Typography */}
+        {/* Section 1: Modification Studio Hero Intro */}
         <section className="h-screen flex flex-col justify-center items-start">
           <div ref={titleRef} className="pointer-events-auto select-none drop-shadow-[0_10px_20px_rgba(0,0,0,1)]">
-            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-white uppercase leading-none mb-2">
-              GT3 RS
+            <span className="text-xs md:text-sm text-cyan-400 font-bold tracking-[0.3em] uppercase mb-3 block">
+              BROOMLK CUSTOMS
+            </span>
+            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-white uppercase leading-none mb-3">
+              REDEFINE <br />YOUR RIDE.
             </h1>
-            <p className="text-lg md:text-2xl font-medium text-stone-400 tracking-wide">
-              Motorsport DNA. Precision Engineered.
+            <p className="text-base md:text-xl font-medium text-stone-400 tracking-wide max-w-md">
+              Sri Lanka's premier 3D virtual garage. Tailor-made aesthetics and track-ready performance modifications for high-end supercars.
             </p>
           </div>
         </section>
 
-        {/* Section 2: Final Interactive Configurator Zone */}
+        {/* Section 2: Virtual Modification Zone */}
         <section className="h-screen flex flex-col justify-center items-end">
           <div ref={specCardRef1} className="pointer-events-auto w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 p-8 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8)] -translate-y-8">
-            <span className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] uppercase">01 / CONFIGURATOR STUDIO</span>
-            <h2 className="text-3xl font-black text-white uppercase mt-1 mb-4">Tailor-Made Performance</h2>
-            <p className="text-stone-300 text-sm leading-relaxed">
-              Use the live interface below to completely personalize your GT3 RS. Experiment with premium historical exterior paints and experience motorsport engineering in real-time.
+            <span className="text-[10px] text-cyan-400 font-bold tracking-[0.2em] uppercase">01 / VIRTUAL CONFIGURATOR</span>
+            <h2 className="text-3xl font-black text-white uppercase mt-1 mb-4">Premium Wraps & Styling</h2>
+            <p className="text-stone-300 text-sm leading-relaxed mb-4">
+              Experiment with our ultra-premium exterior vinyl wraps, custom carbon fiber accents, and high-end automotive styling packages.
+            </p>
+            <p className="text-stone-400 text-xs italic border-l-2 border-cyan-500 pl-3">
+              "Every curve is a canvas. Visualize your dream build before the first cut is made."
             </p>
           </div>
         </section>
