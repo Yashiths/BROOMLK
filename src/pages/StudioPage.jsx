@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function StudioPage() {
     const [hoveredId, setHoveredId] = useState(null);
@@ -273,7 +274,6 @@ export default function StudioPage() {
                         ← BACK TO 3D CUSTOMIZER STUDIO
                     </Link>
                 </div>
-
             </div>
         </div>
     );
