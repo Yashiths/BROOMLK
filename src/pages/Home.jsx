@@ -10,6 +10,16 @@ import Navbar from '../components/Navbar';
 import SpecsBar from '../components/SpecsBar';
 import Footer from '../components/Footer';
 
+// Brand images imports
+import bbsImg from '/public/assets/images/brand/bbs.png';
+import bcracingImg from '/public/assets/images/brand/bcracing.png';
+import bremboImg from '/public/assets/images/brand/brembo.png';
+import ebcbrakesImg from '/public/assets/images/brand/ebcbrakes.png';
+import libertywalkImg from '/public/assets/images/brand/libertywalk.png';
+import milltekImg from '/public/assets/images/brand/milltek.png';
+import recaroImg from '/public/assets/images/brand/recaro.png';
+import remusImg from '/public/assets/images/brand/remus.png';
+
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
@@ -157,18 +167,16 @@ export default function PorscheShowcase() {
 
   }, []);
 
-  // >>> 🚀 EXTRA LUXURY: HIGH-END MODIFICATION SVG ICON VECTOR VAULT
-  // Hand-architected clean vector matrices matching tyrala styling cues
-  const brandIcons = [
-    { name: "BBS", svg: <svg className="w-16 h-8 fill-current" viewBox="0 0 100 35"><path d="M5 5h20v6H5zm0 10h25v6H5zm0 10h15v6H5z" /><text x="32" y="24" className="font-sans font-black tracking-tight text-xl">BBS</text></svg> },
-    { name: "BREMBO", svg: <svg className="w-24 h-8 fill-current" viewBox="0 0 120 30"><circle cx="12" cy="15" r="8" stroke="currentColor" strokeWidth="3" fill="none" /><path d="M10 15h4v4h-4z" /><text x="28" y="22" className="font-sans font-black tracking-wider text-lg italic">brembo</text></svg> },
-    { name: "BC RACING", svg: <svg className="w-28 h-8 fill-current" viewBox="0 0 140 30"><rect x="2" y="6" width="30" height="18" fill="none" stroke="currentColor" strokeWidth="2" /><text x="8" y="19" className="font-mono font-bold text-xs">BC</text><text x="38" y="21" className="font-sans font-black tracking-widest text-base">RACING</text></svg> },
-    { name: "RECARO", svg: <svg className="w-24 h-8 fill-current" viewBox="0 0 110 30"><text x="5" y="22" className="font-sans font-black tracking-[0.15em] text-xl italic">RECARO</text></svg> },
-    { name: "LIBERTY WALK", svg: <svg className="w-14 h-8 fill-current" viewBox="0 0 60 35"><text x="10" y="20" className="font-serif font-black text-2xl tracking-tighter">LB</text><text x="5" y="32" className="text-[7px] font-bold tracking-widest">PERFORMANCE</text></svg> },
-    { name: "REMUS", svg: <svg className="w-24 h-8 fill-current" viewBox="0 0 100 30"><polygon points="5,5 20,5 15,25 0,25" /><text x="26" y="22" className="font-sans font-black tracking-widest text-lg">REMUS</text></svg> },
-    { name: "EBC BRAKES", svg: <svg className="w-20 h-8 fill-current" viewBox="0 0 90 30"><text x="5" y="20" className="font-sans font-black text-2xl tracking-tight">EBC</text><text x="6" y="28" className="text-[8px] font-bold tracking-[0.2em]">BRAKES</text></svg> },
-    { name: "MILLTEK", svg: <svg className="w-24 h-8 fill-current" viewBox="0 0 110 30"><text x="2" y="20" className="font-sans font-black tracking-tight text-lg italic">MILLTEK</text><text x="4" y="28" className="text-[7px] font-mono font-bold tracking-widest">SPORT</text></svg> },
-    { name: "FORGE", svg: <svg className="w-20 h-8 fill-current" viewBox="0 0 90 30"><text x="2" y="22" className="font-sans font-black text-2xl tracking-tight text-cyan-500/80">Forge</text></svg> }
+  // >>> 🚀 FIXED: Added custom width matrices to compensate for different background padding ratios
+  const brandImages = [
+    { name: "BBS", src: bbsImg, sizeClass: "w-28 md:w-32 scale-[1.3]" },         // Upscaled to counter heavy edge margins
+    { name: "BC RACING", src: bcracingImg, sizeClass: "w-32 md:w-36" },
+    { name: "BREMBO", src: bremboImg, sizeClass: "w-28 md:w-32 scale-[1.25]" },
+    { name: "EBC BRAKES", src: ebcbrakesImg, sizeClass: "w-20 md:w-24" },
+    { name: "LIBERTY WALK", src: libertywalkImg, sizeClass: "w-20 md:w-24 scale-[1.4]" },
+    { name: "MILLTEK", src: milltekImg, sizeClass: "w-32 md:w-36" },
+    { name: "RECARO", src: recaroImg, sizeClass: "w-28 md:w-32 scale-[1.15]" },
+    { name: "REMUS", src: remusImg, sizeClass: "w-24 md:w-28 scale-[1.3]" }
   ];
 
   return (
@@ -184,7 +192,7 @@ export default function PorscheShowcase() {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee 20s linear infinite;
+          animation: marquee 25s linear infinite;
         }
       `}} />
 
@@ -267,20 +275,43 @@ export default function PorscheShowcase() {
           </div>
         </section>
 
-        {/* >>> 🚀 NEW BRAND ICON SLIDER (Clean Vectors Line setup inside space gap) */}
+        {/* Section 3: FIXED IMAGE INFINITE RUNNING MARQUEE LINE [BALANCED SIZES] */}
         <section className="h-[40vh] flex flex-col justify-center items-center">
-          <div ref={brandSliderRef} className="w-full pointer-events-auto py-8 border-y border-white/5 bg-black/10 backdrop-blur-sm overflow-hidden relative">
+          <div ref={brandSliderRef} className="w-full pointer-events-auto py-10 border-y border-white/5 bg-black/5 backdrop-blur-md overflow-hidden relative">
 
-            {/* Ambient edge blur shadows */}
             <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
 
-            {/* Seamless Infinite Loop for Custom SVG Icons */}
+            <span className="text-[8px] font-mono font-bold tracking-[0.4em] text-stone-600 uppercase block mb-6 text-center">
+              DEPLOYED ESTABLISHED INDUSTRY EQUIPMENT INTERACTIVE PIPELINE //
+            </span>
+
             <div className="w-full overflow-hidden flex">
-              <div className="animate-marquee flex items-center gap-24 select-none">
-                {brandIcons.concat(brandIcons).map((brand, i) => (
-                  <div key={i} className="text-stone-500/50 hover:text-cyan-400 transition-all duration-300 transform hover:scale-105 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.02)]">
-                    {brand.svg}
+              <div className="animate-marquee flex items-center gap-28 select-none">
+                {/* Loop 1 */}
+                {brandImages.map((brand, i) => (
+                  <div
+                    key={`img1-${i}`}
+                    className={`h-8 flex items-center justify-center transition-all duration-500 transform hover:scale-110 opacity-75 hover:opacity-100 group ${brand.sizeClass}`}
+                  >
+                    <img
+                      src={brand.src}
+                      alt={brand.name}
+                      className="h-full w-full object-contain pointer-events-none grayscale contrast-[110%] brightness-[1.4]"
+                    />
+                  </div>
+                ))}
+                {/* Loop 2 Duplicate for seamless endless looping */}
+                {brandImages.map((brand, i) => (
+                  <div
+                    key={`img2-${i}`}
+                    className={`h-8 flex items-center justify-center transition-all duration-500 transform hover:scale-110 opacity-75 hover:opacity-100 group ${brand.sizeClass}`}
+                  >
+                    <img
+                      src={brand.src}
+                      alt={brand.name}
+                      className="h-full w-full object-contain pointer-events-none grayscale contrast-[110%] brightness-[1.4]"
+                    />
                   </div>
                 ))}
               </div>
@@ -289,7 +320,7 @@ export default function PorscheShowcase() {
           </div>
         </section>
 
-        {/* Section 3: CONNECT HQ HUB ZONE */}
+        {/* Section 4: CONNECT HQ HUB ZONE */}
         <section className="h-screen flex flex-col justify-center items-center">
           <div ref={connectHubRef} className="pointer-events-auto w-full max-w-5xl bg-black/40 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col md:flex-row">
             <div className="w-full md:w-[45%] h-64 md:h-auto min-h-[250px] bg-stone-950 relative filter grayscale-[80%] contrast-[110%] invert-[5%] hover:grayscale-0 transition-all duration-700">
