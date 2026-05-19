@@ -1,16 +1,42 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./src/config/db');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import process from 'node:process';
+
+// Import Routes
+import productRoutes from './src/routes/productRoutes.js';
+import projectRoutes from './src/routes/projectRoutes.js';
+import bookingRoutes from './src/routes/bookingRoutes.js';
 
 const app = express();
-
-// Connect to MongoDB Database
-connectDB();
 
 // Global Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Connect to MongoDB Database (Smart Local Engine Selection)
+const connectDB = async () => {
+  try {
+    let dbUrl = process.env.MONGO_URI;
+
+    if (dbUrl && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1'))) {
+      console.log('[DATABASE] Windows MongoDB Service not found. Starting In-Memory DB Engine...');
+      const mongoServer = await MongoMemoryServer.create();
+      dbUrl = mongoServer.getUri();
+    }
+
+    await mongoose.connect(dbUrl);
+    console.log('[DATABASE] MongoDB Connection Established Successfully');
+  } catch (error) {
+    console.error(`[DATABASE] Connection Failure Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+// start Database 
+connectDB();
 
 // Diagnostic Test Route
 app.get('/', (req, res) => {
@@ -22,9 +48,9 @@ app.get('/', (req, res) => {
 });
 
 // Mounting API Routes
-app.use('/api/products', require('./src/routes/productRoutes'));
-app.use('/api/projects', require('./src/routes/projectRoutes'));
-app.use('/api/bookings', require('./src/routes/bookingRoutes'));
+app.use('/api/products', productRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Configure Port & Listen
 const PORT = process.env.PORT || 5000;

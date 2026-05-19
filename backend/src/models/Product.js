@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema({
     enum: ['Wheels', 'Brakes', 'Interior', 'Exhaust', 'Suspension']
   },
   price: {
-    type: String, // Stored as a formatted string (e.g. '$8,400') to match frontend telemetry
+    type: String, // Stored as a formatted string (e.g. '$8,400')
     required: [true, 'Price is required'],
     trim: true
   },
@@ -35,4 +35,4 @@ const productSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Product', productSchema);
+export default mongoose.model('Product', productSchema);

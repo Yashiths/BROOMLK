@@ -1,11 +1,12 @@
-const Booking = require('../models/Booking');
+import Booking from '../models/Booking.js';
+// 💡 අමතක නොකර අගට .js කෑල්ල දැම්මා මචං!
 
 /**
  * @desc    Get all bookings (with optional status filter)
  * @route   GET /api/bookings
  * @access  Private/Admin
  */
-const getBookings = async (req, res) => {
+export const getBookings = async (req, res) => {
   try {
     const { status } = req.query;
     const filter = {};
@@ -24,7 +25,7 @@ const getBookings = async (req, res) => {
  * @route   POST /api/bookings
  * @access  Public
  */
-const createBooking = async (req, res) => {
+export const createBooking = async (req, res) => {
   try {
     const { client, car, date, time, phone, email, services, specs } = req.body;
     if (!client || !car || !date || !time || !phone || !email) {
@@ -58,7 +59,7 @@ const createBooking = async (req, res) => {
  * @route   PUT /api/bookings/:id
  * @access  Private/Admin
  */
-const updateBooking = async (req, res) => {
+export const updateBooking = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
@@ -85,7 +86,7 @@ const updateBooking = async (req, res) => {
  * @route   DELETE /api/bookings/:id
  * @access  Private/Admin
  */
-const deleteBooking = async (req, res) => {
+export const deleteBooking = async (req, res) => {
   try {
     const { id } = req.params;
     const booking = await Booking.findById(id);
@@ -97,11 +98,4 @@ const deleteBooking = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Server error deleting booking record' });
   }
-};
-
-module.exports = {
-  getBookings,
-  createBooking,
-  updateBooking,
-  deleteBooking
 };

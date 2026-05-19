@@ -1,11 +1,11 @@
-const Product = require('../models/Product');
+import Product from '../models/Product.js';
 
 /**
  * @desc    Get all products (with optional category filtering)
  * @route   GET /api/products
  * @access  Public
  */
-const getProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   try {
     const { category } = req.query;
     const filter = {};
@@ -15,7 +15,7 @@ const getProducts = async (req, res) => {
     const products = await Product.find(filter).sort({ createdAt: -1 });
     res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ error: 'Server error retrieving inventory' });
+    res.status(500).json({ error: error.message || 'Server error retrieving inventory' });
   }
 };
 
@@ -24,7 +24,7 @@ const getProducts = async (req, res) => {
  * @route   POST /api/products
  * @access  Private/Admin
  */
-const createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
     const { name, brand, category, price, stock, description } = req.body;
     if (!name || !brand || !category || !price) {
@@ -49,11 +49,11 @@ const createProduct = async (req, res) => {
  * @route   PUT /api/products/:id
  * @access  Private/Admin
  */
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, brand, category, price, stock, description } = req.body;
-    
+
     let product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
@@ -83,7 +83,7 @@ const updateProduct = async (req, res) => {
  * @route   DELETE /api/products/:id
  * @access  Private/Admin
  */
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findById(id);
@@ -97,9 +97,10 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   getProducts,
   createProduct,
   updateProduct,
   deleteProduct
+
 };

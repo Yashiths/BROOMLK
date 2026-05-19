@@ -1,11 +1,12 @@
-const Project = require('../models/Project');
+import Project from '../models/Project.js';
+// 💡 අමතක නොකර අගට .js කෑල්ල දැම්මා මචං!
 
 /**
  * @desc    Get all project showcases
  * @route   GET /api/projects
  * @access  Public
  */
-const getProjects = async (req, res) => {
+export const getProjects = async (req, res) => {
   try {
     const { theme } = req.query;
     const filter = {};
@@ -24,13 +25,13 @@ const getProjects = async (req, res) => {
  * @route   POST /api/projects
  * @access  Private/Admin
  */
-const createProject = async (req, res) => {
+export const createProject = async (req, res) => {
   try {
     const { name, brand, theme, specs, description } = req.body;
     if (!name || !brand || !theme || !specs || !specs.hp || !specs.launch || !specs.sound || !description) {
       return res.status(400).json({ error: 'Please provide all required fields including specs (hp, launch, sound)' });
     }
-    
+
     const newProject = await Project.create({
       name,
       brand,
@@ -38,7 +39,7 @@ const createProject = async (req, res) => {
       specs,
       description
     });
-    
+
     res.status(201).json(newProject);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -50,7 +51,7 @@ const createProject = async (req, res) => {
  * @route   DELETE /api/projects/:id
  * @access  Private/Admin
  */
-const deleteProject = async (req, res) => {
+export const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
     const project = await Project.findById(id);
@@ -62,10 +63,4 @@ const deleteProject = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Server error deleting project showcase' });
   }
-};
-
-module.exports = {
-  getProjects,
-  createProject,
-  deleteProject
 };
