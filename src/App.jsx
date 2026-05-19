@@ -1,3 +1,4 @@
+// Force trigger reload v2
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import PorscheShowcase from './pages/Home';
@@ -11,6 +12,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminStore from './pages/admin/AdminStore';
 import AdminConsultations from './pages/admin/AdminConsultations';
 import AdminProjects from './pages/admin/AdminProjects';
+import AdminSettings from './pages/admin/AdminSettings';
 
 function App() {
   return (
@@ -27,7 +29,7 @@ function App() {
           <Route path="store" element={<AdminStore />} />
           <Route path="bookings" element={<AdminConsultations />} />
           <Route path="projects" element={<AdminProjects />} />
-          <Route path="settings" element={<div className="p-8 text-stone-400 font-mono text-sm uppercase tracking-widest">Settings Module (Under Construction)</div>} />
+          <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
     </div>
