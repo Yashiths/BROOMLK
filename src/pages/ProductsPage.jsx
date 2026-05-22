@@ -37,19 +37,24 @@ export default function ProductsPage() {
         return () => { document.body.style.overflow = 'unset'; };
     }, [selectedProduct]);
 
+    // 🔥 FIX: id එක කෙලින්ම Database එකේ තියෙන Schema values ('interior', 'wheels' etc.) වලට සමාන කළා
     const categories = [
         { id: 'all', name: 'ALL VAULT ITEMS' },
-        { id: 'carbon', name: 'CARBON AERO' },
+        { id: 'interior', name: 'CARBON AERO' },
         { id: 'exhaust', name: 'EXHAUST SYSTEMS' },
-        { id: 'rims', name: 'FORGED RIMS' },
-        { id: 'performance', name: 'PERFORMANCE HARDWARE' },
-        { id: 'merch', name: 'OFFICIAL MERCH' }
+        { id: 'wheels', name: 'FORGED RIMS' },
+        { id: 'suspension', name: 'PERFORMANCE HARDWARE' }
     ];
 
-    // Filter database products based on active category selector
+    // 🔥 CLEAN & 100% ACCURATE FILTER
     const filteredProducts = activeCategory === 'all'
         ? products
-        : products.filter(p => p.category?.toLowerCase() === activeCategory.toLowerCase());
+        : products.filter(p => {
+            if (!p.category) return false;
+            
+            // Database එකෙන් එන අගයයි, active category id එකයි කෙලින්ම සසඳනවා
+            return p.category.toLowerCase().trim() === activeCategory.toLowerCase().trim();
+        });
 
     return (
         <div className="min-h-screen bg-[#030303] text-white font-sans overflow-x-hidden relative selection:bg-cyan-500 selection:text-black">
@@ -128,7 +133,7 @@ export default function ProductsPage() {
 
                                     {/* Category Spec Badge */}
                                     <div className="absolute top-4 left-4 bg-black/60 border border-white/10 text-[8px] font-black tracking-widest font-mono uppercase px-2.5 py-1 text-stone-300">
-                                        {product.tag || product.category}
+                                        {product.category}
                                     </div>
                                 </div>
 
@@ -139,7 +144,7 @@ export default function ProductsPage() {
                                             {product.name}
                                         </h3>
                                         <p className="text-stone-400 text-xs leading-relaxed line-clamp-2">
-                                            {product.shortDesc || product.description}
+                                            {product.description}
                                         </p>
                                     </div>
 
@@ -159,7 +164,7 @@ export default function ProductsPage() {
 
                 {/* DOUBLE-SIDED FLOATING OVERLAY QUICK VIEW PANEL */}
                 {selectedProduct && (
-                    <div className="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-lg flex items-center justify-center p-4 md:p-8 pointer-events-auto animate-fade-in">
+                    <div className="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-lg flex items-center justify-center p-4 md:p-8 pointer-events-auto">
 
                         <div className="w-full max-w-5xl h-auto md:h-[540px] bg-[#090909]/95 border border-white/10 rounded-3xl overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.95)] flex flex-col md:flex-row relative">
 
@@ -169,7 +174,7 @@ export default function ProductsPage() {
                                     src={selectedProduct.image || "https://images.unsplash.com/photo-1615887110697-0819ec23465f?q=80&w=600&auto=format&fit=crop"}
                                     alt=""
                                     className="w-full h-full object-contain filter contrast-[105%]"
-                                    bag />
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none" />
                                 <div className="absolute top-4 left-4 text-[9px] font-bold font-mono text-cyan-400 tracking-wider uppercase bg-black/50 border border-cyan-500/20 px-2 py-0.5 rounded">
                                     AUTHENTIC PARTS DEPOT
@@ -182,7 +187,7 @@ export default function ProductsPage() {
                                 <div>
                                     <div className="flex items-center justify-between gap-4 mb-1">
                                         <span className="text-[9px] text-cyan-400 font-extrabold tracking-[0.2em] uppercase bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded">
-                                            {selectedProduct.tag || selectedProduct.category}
+                                            {selectedProduct.category}
                                         </span>
                                         <button
                                             onClick={() => setSelectedProduct(null)}
@@ -208,7 +213,7 @@ export default function ProductsPage() {
                                         <div className="w-full h-[1px] bg-white/5" />
                                         <div>
                                             <h4 className="font-extrabold text-stone-500 uppercase tracking-widest text-[9px] mb-0.5">TECHNICAL OVERVIEW</h4>
-                                            <p className="text-stone-300 leading-relaxed font-medium">{selectedProduct.details || selectedProduct.description}</p>
+                                            <p className="text-stone-300 leading-relaxed font-medium">{selectedProduct.description}</p>
                                         </div>
                                     </div>
                                 </div>

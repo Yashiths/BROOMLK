@@ -10,15 +10,15 @@ import Navbar from '../components/Navbar';
 import SpecsBar from '../components/SpecsBar';
 import Footer from '../components/Footer';
 
-// Brand images imports
-import bbsImg from '/public/assets/images/brand/bbs.png';
-import bcracingImg from '/public/assets/images/brand/bcracing.png';
-import bremboImg from '/public/assets/images/brand/brembo.png';
-import ebcbrakesImg from '/public/assets/images/brand/ebcbrakes.png';
-import libertywalkImg from '/public/assets/images/brand/libertywalk.png';
-import milltekImg from '/public/assets/images/brand/milltek.png';
-import recaroImg from '/public/assets/images/brand/recaro.png';
-import remusImg from '/public/assets/images/brand/remus.png';
+// ✅ FIXED: Removed '/public' prefix from JavaScript imports so Vite can resolve assets properly
+import bbsImg from '/assets/images/brand/bbs.png';
+import bcracingImg from '/assets/images/brand/bcracing.png';
+import bremboImg from '/assets/images/brand/brembo.png';
+import ebcbrakesImg from '/assets/images/brand/ebcbrakes.png';
+import libertywalkImg from '/assets/images/brand/libertywalk.png';
+import milltekImg from '/assets/images/brand/milltek.png';
+import recaroImg from '/assets/images/brand/recaro.png';
+import remusImg from '/assets/images/brand/remus.png';
 
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -167,7 +167,7 @@ export default function PorscheShowcase() {
 
   }, []);
 
-  // >>> 🚀 FIXED: Added custom width matrices to compensate for different background padding ratios
+  // Custom width matrices to compensate for different background padding ratios
   const brandImages = [
     { name: "BBS", src: bbsImg, sizeClass: "w-28 md:w-32 scale-[1.3]" },         // Upscaled to counter heavy edge margins
     { name: "BC RACING", src: bcracingImg, sizeClass: "w-32 md:w-36" },

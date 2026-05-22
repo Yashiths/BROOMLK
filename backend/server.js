@@ -16,15 +16,30 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB Database (Smart Local Engine Selection)
+// Global Middleware for Case-Sensitivity (POST/PUT body and GET query params)
+app.use((req, res, next) => {
+  // Fixes Category in Request Body (POST/PUT)
+  if (req.body && req.body.category) {
+    req.body.category = req.body.category.toLowerCase();
+  }
+  // Fixes Category in Query Parameters (GET)
+  if (req.query && req.query.category) {
+    req.query.category = req.query.category.toLowerCase();
+  }
+  next();
+});
+
+// Connect to MongoDB Database
 const connectDB = async () => {
   try {
-    let dbUrl = process.env.MONGO_URI;
+    let dbUrl = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/broomlk';
 
-    if (dbUrl && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1'))) {
-      console.log('[DATABASE] Windows MongoDB Service not found. Starting In-Memory DB Engine...');
+    if (process.env.USE_MEMORY_DB === 'true') {
+      console.log('[DATABASE] Force Starting In-Memory DB Engine...');
       const mongoServer = await MongoMemoryServer.create();
       dbUrl = mongoServer.getUri();
+    } else {
+      console.log(`[DATABASE] Connecting to Local/Cloud Instance: ${dbUrl}`);
     }
 
     await mongoose.connect(dbUrl);
@@ -35,7 +50,6 @@ const connectDB = async () => {
   }
 };
 
-// start Database 
 connectDB();
 
 // Diagnostic Test Route

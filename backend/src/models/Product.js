@@ -14,7 +14,9 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Category is required'],
-    enum: ['Wheels', 'Brakes', 'Interior', 'Exhaust', 'Suspension']
+    enum: ['wheels', 'brakes', 'interior', 'exhaust', 'suspension'], // 1. මෙතන ඔක්කොම lowercase කරන්න
+    lowercase: true, // 2. මේක දැම්මම client මොන විදිහට කැපිටල් කරලා එව්වත් auto සිම්පල් වෙනවා
+    trim: true
   },
   price: {
     type: String, // Stored as a formatted string (e.g. '$8,400')
