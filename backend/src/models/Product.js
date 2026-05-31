@@ -14,14 +14,14 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Category is required'],
-    enum: ['wheels', 'brakes', 'interior', 'exhaust', 'suspension'], // 1. මෙතන ඔක්කොම lowercase කරන්න
-    lowercase: true, // 2. මේක දැම්මම client මොන විදිහට කැපිටල් කරලා එව්වත් auto සිම්පල් වෙනවා
+    enum: ['wheels', 'brakes', 'interior', 'exhaust', 'suspension'],
+    lowercase: true,
     trim: true
   },
   price: {
-    type: String, // Stored as a formatted string (e.g. '$8,400')
+    type: Number, // 👈 Stored as a Number to align with frontend parsing and valuation logic
     required: [true, 'Price is required'],
-    trim: true
+    min: [0, 'Price cannot be negative']
   },
   stock: {
     type: Number,
@@ -32,6 +32,10 @@ const productSchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true
+  },
+  image: {
+    type: String,
+    default: '' // 👈 Dynamic asset file destination route path mapping pointer
   }
 }, {
   timestamps: true

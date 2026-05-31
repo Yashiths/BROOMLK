@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { 
   Plus, 
@@ -11,7 +11,8 @@ import {
   Sparkles, 
   DollarSign, 
   Activity, 
-  AlertTriangle 
+  AlertTriangle,
+  ImagePlus
 } from 'lucide-react';
 
 const CATEGORIES = ['All', 'Wheels', 'Brakes', 'Interior', 'Exhaust', 'Suspension'];
@@ -26,6 +27,7 @@ const INITIAL_FORM_STATE = {
 };
 
 const API_BASE_URL = 'http://localhost:5000/api/products'; 
+const SERVER_BASE_URL = 'http://localhost:5000'; // 👈 Backend static uploads සර්ව් කරන්න
 
 export default function AdminStore() {
   const [products, setProducts] = useState([]); 
@@ -35,6 +37,11 @@ export default function AdminStore() {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingProductId, setEditingProductId] = useState(null);
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
+  
+  // Image handling references & states
+  const fileInputRef = useRef(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -56,9 +63,20 @@ export default function AdminStore() {
     setFormState(prev => ({ ...prev, [name]: value }));
   };
 
+  // Image selection processor
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file)); // Local object link to render inside file box
+    }
+  };
+
   const handleOpenAdd = () => {
     setEditingProductId(null);
     setFormState(INITIAL_FORM_STATE);
+    setImageFile(null);
+    setImagePreview(null);
     setIsSlideoverOpen(true);
   };
 
@@ -72,6 +90,15 @@ export default function AdminStore() {
       stock: product.stock,
       description: product.description || ''
     });
+    
+    setImageFile(null);
+
+    if (product.image) {
+      setImagePreview(`${SERVER_BASE_URL}${product.image}`);
+    } else {
+      setImagePreview(null);
+    }
+    
     setIsSlideoverOpen(true);
   };
 
@@ -107,24 +134,33 @@ export default function AdminStore() {
     const numericPrice = parseFloat(price.toString().replace(/[$,]/g, '')) || 0;
     const parsedStock = parseInt(stock, 10) || 0;
 
-    const productPayload = {
-      name,
-      brand,
-      category,
-      price: numericPrice,
-      stock: parsedStock,
-      description
-    };
+    // 👈 Multipart form initialization to bridge image stream binary data
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('brand', brand);
+    formData.append('category', category);
+    formData.append('price', numericPrice);
+    formData.append('stock', parsedStock);
+    formData.append('description', description);
+    
+    if (imageFile) {
+      formData.append('image', imageFile); // File context appender
+    }
 
     try {
       if (editingProductId) {
-        const response = await axios.put(`${API_BASE_URL}/${editingProductId}`, productPayload);
+        const response = await axios.put(`${API_BASE_URL}/${editingProductId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setProducts(prev => prev.map(p => p._id === editingProductId ? response.data : p));
       } else {
-        const response = await axios.post(API_BASE_URL, productPayload);
+        const response = await axios.post(API_BASE_URL, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         setProducts(prev => [response.data, ...prev]);
       }
       setIsSlideoverOpen(false);
+      fetchProducts(); // Refresh structural listings safely
     } catch (error) {
       console.error("Error saving product:", error);
       alert("Error saving data to database.");
@@ -160,6 +196,7 @@ export default function AdminStore() {
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 select-none p-4 md:p-0">
+      {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -184,6 +221,7 @@ export default function AdminStore() {
         </button>
       </div>
 
+      {/* STATS INFRASTRUCTURE */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-xl group hover:border-[#00C2FF]/30 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
@@ -232,6 +270,7 @@ export default function AdminStore() {
         </div>
       </div>
 
+      {/* FILTERS & SEARCH MODULE */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md flex flex-col lg:flex-row gap-4 items-center justify-between">
         <div className="relative w-full lg:w-80">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
@@ -274,6 +313,7 @@ export default function AdminStore() {
         </div>
       </div>
 
+      {/* CORE DATATABLE GRID */}
       <div className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
         <div className="overflow-x-auto">
           {loading ? (
@@ -298,8 +338,13 @@ export default function AdminStore() {
                     <tr key={product._id} className="hover:bg-white/5 transition-colors group"> 
                       <td className="p-5 pl-6">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 bg-black/40 rounded border border-white/10 flex items-center justify-center text-stone-500 group-hover:text-white transition-colors shrink-0">
-                            <Package size={18} />
+
+                          <div className="h-10 w-10 bg-black/40 rounded border border-white/10 flex items-center justify-center text-stone-500 group-hover:text-white overflow-hidden transition-colors shrink-0">
+                            {product.image ? (
+                              <img src={`${SERVER_BASE_URL}${product.image}`} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <Package size={18} />
+                            )}
                           </div>
                           <div>
                             <div className="font-extrabold text-white tracking-wide">{product.name}</div>
@@ -372,6 +417,7 @@ export default function AdminStore() {
         </div>
       </div>
 
+      {/* EXISTING SLIDE-OVER CONTEXT DRAWER */}
       {isSlideoverOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onClick={() => setIsSlideoverOpen(false)}></div>
@@ -393,6 +439,40 @@ export default function AdminStore() {
             
             <form onSubmit={handleSaveProduct} className="flex-1 flex flex-col justify-between overflow-hidden">
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase text-stone-400 tracking-widest mb-2">Product Profiler Image</label>
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="w-full h-36 bg-stone-900/40 border border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-[#00C2FF]/40 transition-all overflow-hidden relative group"
+                  >
+                    {imagePreview ? (
+                      <>
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-[10px] font-black uppercase tracking-widest text-[#00C2FF]">
+                          Change Asset Component Image
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center p-4 space-y-1.5">
+                        <div className="mx-auto w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-stone-400 group-hover:text-[#00C2FF] transition-colors">
+                          <ImagePlus size={16} />
+                        </div>
+                        <p className="text-[11px] text-stone-400 font-bold">Inject raw image path</p>
+                        <p className="text-[9px] text-stone-600 font-mono">PNG, JPG, WEBP (MAX 5MB)</p>
+                      </div>
+                    )}
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleImageChange} 
+                    className="hidden" 
+                    accept="image/*" 
+                  />
+                </div>
+
                 <div>
                   <label className="block text-[10px] font-black uppercase text-stone-400 tracking-widest mb-2">Product Name *</label>
                   <input type="text" name="name" required value={formState.name} onChange={handleInputChange} className="w-full bg-stone-900/80 border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white placeholder-stone-600 focus:outline-none focus:border-[#00C2FF] transition-all font-semibold" placeholder="e.g. BBS FI-R Forged Wheels" />

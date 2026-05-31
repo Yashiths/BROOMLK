@@ -4,6 +4,8 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import process from 'node:process';
+import path from 'path';
+import fs from 'fs';
 
 // Import Routes
 import productRoutes from './src/routes/productRoutes.js';
@@ -15,6 +17,14 @@ const app = express();
 // Global Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Ensure uploads directory exists on server bootstrap
+if (!fs.existsSync('./uploads')) {
+    fs.mkdirSync('./uploads');
+}
+
+// Static Assets Route Middleware for Uploads
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Global Middleware for Case-Sensitivity (POST/PUT body and GET query params)
 app.use((req, res, next) => {

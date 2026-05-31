@@ -10,13 +10,14 @@ export default function ProductsPage() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const BACKEND_URL = 'http://localhost:5000';
+
     useEffect(() => {
         window.scrollTo(0, 0);
 
-        // Fetch products from our Node.js backend API
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/products');
+                const response = await axios.get(`${BACKEND_URL}/api/products`);
                 setProducts(response.data);
                 setLoading(false);
             } catch (error) {
@@ -37,7 +38,6 @@ export default function ProductsPage() {
         return () => { document.body.style.overflow = 'unset'; };
     }, [selectedProduct]);
 
-    // 🔥 FIX: id එක කෙලින්ම Database එකේ තියෙන Schema values ('interior', 'wheels' etc.) වලට සමාන කළා
     const categories = [
         { id: 'all', name: 'ALL VAULT ITEMS' },
         { id: 'interior', name: 'CARBON AERO' },
@@ -46,27 +46,22 @@ export default function ProductsPage() {
         { id: 'suspension', name: 'PERFORMANCE HARDWARE' }
     ];
 
-    // 🔥 CLEAN & 100% ACCURATE FILTER
     const filteredProducts = activeCategory === 'all'
         ? products
         : products.filter(p => {
             if (!p.category) return false;
-            
-            // Database එකෙන් එන අගයයි, active category id එකයි කෙලින්ම සසඳනවා
             return p.category.toLowerCase().trim() === activeCategory.toLowerCase().trim();
         });
 
     return (
         <div className="min-h-screen bg-[#030303] text-white font-sans overflow-x-hidden relative selection:bg-cyan-500 selection:text-black">
 
-            {/* BACKGROUND DECORATIVE GLOW */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[150px] pointer-events-none" />
 
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-6 md:px-16 pt-32 pb-20 relative z-10">
 
-                {/* PREMIUM STORE HEADER */}
                 <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-10">
                     <div>
                         <span className="text-xs text-cyan-400 font-bold tracking-[0.4em] uppercase mb-2 block">
@@ -81,7 +76,6 @@ export default function ProductsPage() {
                     </p>
                 </div>
 
-                {/* GLASSMORPHIC CATEGORY TABS SELECTOR */}
                 <div className="flex flex-wrap gap-2 mb-16 border-b border-white/5 pb-6">
                     {categories.map((cat) => (
                         <button
@@ -94,7 +88,6 @@ export default function ProductsPage() {
                     ))}
                 </div>
 
-                {/* RENDERING STATE HANDLING */}
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <span className="text-xs font-black tracking-[0.3em] uppercase text-cyan-400 animate-pulse">
@@ -108,7 +101,6 @@ export default function ProductsPage() {
                         </span>
                     </div>
                 ) : (
-                    /* 3-COLUMN LUXURY PRODUCT DISPLAY GRID */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredProducts.map((product) => (
                             <div
@@ -122,22 +114,19 @@ export default function ProductsPage() {
                                     boxShadow: hoveredId === product._id ? '0 20px 50px -10px rgba(6,182,212,0.1)' : '0 30px 60px rgba(0,0,0,0.5)'
                                 }}
                             >
-                                {/* Product Image Area */}
                                 <div className="w-full h-64 relative bg-[#0a0a0a] flex items-center justify-center p-6 border-b border-white/5 overflow-hidden">
                                     <img
-                                        src={product.image || "https://images.unsplash.com/photo-1615887110697-0819ec23465f?q=80&w=600&auto=format&fit=crop"}
+                                        src={product.image ? `${BACKEND_URL}${product.image}` : "https://images.unsplash.com/photo-1615887110697-0819ec23465f?q=80&w=600&auto=format&fit=crop"}
                                         alt={product.name}
                                         className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105 filter grayscale-[20%] group-hover:grayscale-0"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
-                                    {/* Category Spec Badge */}
                                     <div className="absolute top-4 left-4 bg-black/60 border border-white/10 text-[8px] font-black tracking-widest font-mono uppercase px-2.5 py-1 text-stone-300">
                                         {product.category}
                                     </div>
                                 </div>
 
-                                {/* Product Meta Info Bottom */}
                                 <div className="p-6 flex flex-col justify-between h-40">
                                     <div>
                                         <h3 className="text-lg font-black text-white uppercase tracking-tight mb-1 group-hover:text-cyan-400 transition-colors duration-300">
@@ -150,7 +139,7 @@ export default function ProductsPage() {
 
                                     <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-2">
                                         <span className="text-sm font-extrabold font-mono text-white tracking-wide">
-                                            {product.price}
+                                            {typeof product.price === 'number' ? `$${product.price.toLocaleString()}` : product.price}
                                         </span>
                                         <span className="text-[9px] font-black tracking-widest uppercase text-cyan-400 group-hover:text-cyan-300 transition-colors duration-200">
                                             VIEW SPECS →
@@ -162,16 +151,14 @@ export default function ProductsPage() {
                     </div>
                 )}
 
-                {/* DOUBLE-SIDED FLOATING OVERLAY QUICK VIEW PANEL */}
                 {selectedProduct && (
                     <div className="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-lg flex items-center justify-center p-4 md:p-8 pointer-events-auto">
 
                         <div className="w-full max-w-5xl h-auto md:h-[540px] bg-[#090909]/95 border border-white/10 rounded-3xl overflow-hidden shadow-[0_50px_120px_rgba(0,0,0,0.95)] flex flex-col md:flex-row relative">
 
-                            {/* LEFT SIDE: PRODUCT HIGHLIGHT VISUAL BOX */}
                             <div className="w-full md:w-[50%] h-64 md:h-full relative bg-[#0c0c0c] flex items-center justify-center p-8 border-b md:border-b-0 md:border-r border-white/10">
                                 <img
-                                    src={selectedProduct.image || "https://images.unsplash.com/photo-1615887110697-0819ec23465f?q=80&w=600&auto=format&fit=crop"}
+                                    src={selectedProduct.image ? `${BACKEND_URL}${selectedProduct.image}` : "https://images.unsplash.com/photo-1615887110697-0819ec23465f?q=80&w=600&auto=format&fit=crop"}
                                     alt=""
                                     className="w-full h-full object-contain filter contrast-[105%]"
                                 />
@@ -181,7 +168,6 @@ export default function ProductsPage() {
                                 </div>
                             </div>
 
-                            {/* RIGHT SIDE: SPECIFICATIONS & CONVERSION GATEWAY */}
                             <div className="w-full md:w-[50%] p-6 md:p-10 flex flex-col justify-between overflow-y-auto bg-black/40">
 
                                 <div>
@@ -201,10 +187,9 @@ export default function ProductsPage() {
                                         {selectedProduct.name}
                                     </h3>
                                     <span className="text-lg font-mono font-bold text-cyan-400 block mb-6">
-                                        {selectedProduct.price}
+                                        {typeof selectedProduct.price === 'number' ? `$${selectedProduct.price.toLocaleString()}` : selectedProduct.price}
                                     </span>
 
-                                    {/* Bullet Tech Specs Sheets */}
                                     <div className="flex flex-col gap-4 text-xs">
                                         <div>
                                             <h4 className="font-extrabold text-stone-500 uppercase tracking-widest text-[9px] mb-0.5">COMPATIBLE VEHICLES</h4>
@@ -218,7 +203,6 @@ export default function ProductsPage() {
                                     </div>
                                 </div>
 
-                                {/* Conversion Button Actions */}
                                 <div className="mt-8 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
                                     <span className="text-[9px] font-bold tracking-widest text-stone-500 uppercase">INQUIRE THROUGH BROOMLK EXECUTIVE</span>
                                     <Link

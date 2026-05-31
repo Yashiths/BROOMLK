@@ -10,18 +10,75 @@ import Navbar from '../components/Navbar';
 import SpecsBar from '../components/SpecsBar';
 import Footer from '../components/Footer';
 
-// ✅ FIXED: Removed '/public' prefix from JavaScript imports so Vite can resolve assets properly
-import bbsImg from '/assets/images/brand/bbs.png';
-import bcracingImg from '/assets/images/brand/bcracing.png';
-import bremboImg from '/assets/images/brand/brembo.png';
-import ebcbrakesImg from '/assets/images/brand/ebcbrakes.png';
-import libertywalkImg from '/assets/images/brand/libertywalk.png';
-import milltekImg from '/assets/images/brand/milltek.png';
-import recaroImg from '/assets/images/brand/recaro.png';
-import remusImg from '/assets/images/brand/remus.png';
+// Lucide Icons for the Dashboard Matrix Grid
+import { Gauge, Timer, Volume2, Paintbrush, Disc, Zap, Flame } from 'lucide-react';
 
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
+
+// Configuration matrix items with descriptions explaining automotive terms
+const MATRIX_ITEMS = [
+  {
+    id: 'hp',
+    label: 'HP (Horsepower)',
+    value: '520 WHP',
+    color: 'text-amber-400',
+    borderColor: 'border-amber-400/30',
+    bgColor: 'bg-amber-500/5',
+    icon: <Gauge size={12} className="text-amber-400" />,
+    desc: "The maximum power delivered from the engine to the wheels. Higher horsepower directly results in faster overall speed and rapid acceleration."
+  },
+  {
+    id: 'speed',
+    label: '0-100 KM/H',
+    value: '3.2s',
+    color: 'text-cyan-400',
+    borderColor: 'border-cyan-400/30',
+    bgColor: 'bg-cyan-500/5',
+    icon: <Timer size={12} className="text-cyan-400" />,
+    desc: "The time taken to accelerate from a complete standstill to 100 KM/H. Delivers a lightning-fast response similar to high-end racing supercars."
+  },
+  {
+    id: 'exhaust',
+    label: 'EXHAUST SYSTEM',
+    value: '118 dB',
+    color: 'text-red-400',
+    borderColor: 'border-red-400/30',
+    bgColor: 'bg-red-500/5',
+    icon: <Volume2 size={12} className="text-red-400" />,
+    desc: "A premium high-flow exhaust system optimizes engine backpressure to increase raw performance while delivering an aggressive acoustic note."
+  },
+  {
+    id: 'top_speed',
+    label: 'TOP SPEED',
+    value: '325 KM/H',
+    color: 'text-fuchsia-400',
+    borderColor: 'border-fuchsia-400/30',
+    bgColor: 'bg-fuchsia-500/5',
+    icon: <Zap size={12} className="text-fuchsia-400" />,
+    desc: "The maximum absolute velocity the vehicle can achieve. Fully configured and structurally tuned to maintain stability during track operations."
+  },
+  {
+    id: 'wrap',
+    label: 'WRAP VINYL',
+    value: 'Satin Chrome',
+    color: 'text-emerald-400',
+    borderColor: 'border-emerald-400/30',
+    bgColor: 'bg-emerald-500/5',
+    icon: <Paintbrush size={12} className="text-emerald-400" />,
+    desc: "Premium vinyl coating that changes the car's exterior color and finish to a distinct premium look while protecting the original factory paint."
+  },
+  {
+    id: 'wheels',
+    label: 'WHEELS & RIMS',
+    value: '21" Forged',
+    color: 'text-purple-400',
+    borderColor: 'border-purple-400/30',
+    bgColor: 'bg-purple-500/5',
+    icon: <Disc size={12} className="text-purple-400" />,
+    desc: "Ultra-lightweight forged rims significantly reduce unsprung weight, providing sharper handling, superior braking control, and a high-end stance."
+  }
+];
 
 // Custom helper component to handle dynamic camera movements via GSAP ScrollTrigger
 function CameraController() {
@@ -92,21 +149,47 @@ function PorscheModel({ activeColor }) {
 // Main Page Showcase Component
 export default function PorscheShowcase() {
   const [activeColor, setActiveColor] = useState('white');
+  const [slotsRemaining, setSlotsRemaining] = useState(3);
+  
+  // Matrix interaction states
+  const [activeMatrixIndex, setActiveMatrixIndex] = useState(0);
+  const [isMatrixHovered, setIsMatrixHovered] = useState(false);
 
   const titleRef = useRef();
   const configCardRef = useRef();
-  const brandSliderRef = useRef();
   const connectHubRef = useRef();
   const specsBarRef = useRef();
 
+  // Auto-rotate dynamic info box loop
+  useEffect(() => {
+    if (isMatrixHovered) return;
+
+    const interval = setInterval(() => {
+      setActiveMatrixIndex((prev) => (prev + 1) % MATRIX_ITEMS.length);
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isMatrixHovered]);
+
+  // Booking Counter Dynamic Simulation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlotsRemaining((prev) => {
+        if (prev <= 1) return 3;
+        return prev - 1;
+      });
+    }, 45000);
+    return () => clearInterval(interval);
+  }, []);
+
   useLayoutEffect(() => {
-    // 1. Hero Title Entry Animation
+    // Hero Title Entry Animation
     gsap.fromTo(titleRef.current,
       { opacity: 0, y: 60 },
       { opacity: 1, y: 0, duration: 1.6, ease: 'power4.out' }
     );
 
-    // 2. ULTRA-CLEAN SPECS BAR HIDING SYSTEM
+    // Specs Bar Hiding System
     gsap.to(specsBarRef.current, {
       opacity: 0,
       y: 40,
@@ -120,7 +203,7 @@ export default function PorscheShowcase() {
       }
     });
 
-    // 3. Section 2: Premium Wraps Card Scroll Reveal
+    // Section 2: Premium Wraps Card Scroll Reveal
     gsap.fromTo(configCardRef.current,
       { opacity: 0, y: 100, scale: 0.95 },
       {
@@ -135,22 +218,7 @@ export default function PorscheShowcase() {
       }
     );
 
-    // 4. BRAND SLIDER REVEAL (Middle Section)
-    gsap.fromTo(brandSliderRef.current,
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1, y: 0,
-        scrollTrigger: {
-          trigger: brandSliderRef.current,
-          start: "top 90%",
-          end: "top 60%",
-          scrub: 1,
-          toggleActions: "play reverse play reverse"
-        }
-      }
-    );
-
-    // 5. Section 3: Wide Connect HQ Hub Scroll Reveal
+    // Section 3: Wide Connect HQ Hub Scroll Reveal
     gsap.fromTo(connectHubRef.current,
       { opacity: 0, y: 40, scale: 0.98 },
       {
@@ -167,34 +235,8 @@ export default function PorscheShowcase() {
 
   }, []);
 
-  // Custom width matrices to compensate for different background padding ratios
-  const brandImages = [
-    { name: "BBS", src: bbsImg, sizeClass: "w-28 md:w-32 scale-[1.3]" },         // Upscaled to counter heavy edge margins
-    { name: "BC RACING", src: bcracingImg, sizeClass: "w-32 md:w-36" },
-    { name: "BREMBO", src: bremboImg, sizeClass: "w-28 md:w-32 scale-[1.25]" },
-    { name: "EBC BRAKES", src: ebcbrakesImg, sizeClass: "w-20 md:w-24" },
-    { name: "LIBERTY WALK", src: libertywalkImg, sizeClass: "w-20 md:w-24 scale-[1.4]" },
-    { name: "MILLTEK", src: milltekImg, sizeClass: "w-32 md:w-36" },
-    { name: "RECARO", src: recaroImg, sizeClass: "w-28 md:w-32 scale-[1.15]" },
-    { name: "REMUS", src: remusImg, sizeClass: "w-24 md:w-28 scale-[1.3]" }
-  ];
-
   return (
-    <div className="scroll-container bg-[#050505] text-white relative select-none font-sans overflow-x-hidden" style={{ height: '320vh' }}>
-
-      {/* INFINITE MARQUEE ANIMATION KEYFRAMES */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes marquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          display: flex;
-          width: max-content;
-          animation: marquee 25s linear infinite;
-        }
-      `}} />
+    <div className="scroll-container bg-[#050505] text-white relative select-none font-sans overflow-x-hidden" style={{ height: '300vh' }}>
 
       <Navbar />
 
@@ -257,70 +299,52 @@ export default function PorscheShowcase() {
               Experiment with our ultra-premium exterior vinyl wraps, custom carbon fiber accents, and high-end automotive styling packages.
             </p>
 
-            <div className="flex flex-col gap-2 border-t border-white/5 pt-4 mb-6 font-mono text-[10px] font-bold text-stone-400 tracking-wide">
-              <div className="flex items-center gap-2">
-                <span className="text-cyan-500">//</span> 01. MULTI-LAYER PAINT PROTECTION (PPF)
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-cyan-500">//</span> 02. ULTRA-GLOSS & SATIN CHROME TEXTURES
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-cyan-500">//</span> 03. 100% NON-DAMAGING VINYL ADHESIVES
-              </div>
+            {/* INTERACTIVE MATRIX GRID */}
+            <div 
+              className="grid grid-cols-2 gap-2 bg-black/60 p-3 rounded-xl border border-white/5 text-center font-mono mb-5"
+              onMouseEnter={() => setIsMatrixHovered(true)}
+              onMouseLeave={() => setIsMatrixHovered(false)}
+            >
+              {MATRIX_ITEMS.map((item, index) => {
+                const isActive = index === activeMatrixIndex;
+                return (
+                  <div 
+                    key={item.id}
+                    onClick={() => setActiveMatrixIndex(index)}
+                    className={`flex flex-col justify-center py-2.5 cursor-pointer rounded-lg transition-all duration-300 border ${
+                      isActive 
+                        ? `${item.borderColor} ${item.bgColor} shadow-[inset_0_0_12px_rgba(250,250,250,0.02)] scale-[1.02]` 
+                        : 'border-transparent opacity-40 hover:opacity-80'
+                    }`}
+                  >
+                    <span className="text-[7px] font-black text-stone-400 uppercase tracking-wider flex items-center justify-center gap-1">
+                      {item.icon} {item.label.split(' ')[0]}
+                    </span>
+                    <span className={`text-[10px] font-bold ${item.color} mt-0.5 truncate px-0.5`}>
+                      {item.value}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
-            <p className="text-stone-400 text-xs italic border-l-2 border-cyan-500 pl-3">
+            {/* DYNAMIC EXPLAINER BOX FOR GLOSSARY DETAILS */}
+            <div className="min-h-[90px] border-l-2 border-cyan-500 bg-cyan-950/10 p-3.5 rounded-r-lg transition-all duration-500 mb-6">
+              <h4 className={`text-[9px] font-mono font-black ${MATRIX_ITEMS[activeMatrixIndex].color} uppercase tracking-widest flex items-center gap-1.5`}>
+                💡 WHAT IS {MATRIX_ITEMS[activeMatrixIndex].label}?
+              </h4>
+              <p className="text-stone-300 text-[11px] leading-relaxed font-medium mt-1">
+                {MATRIX_ITEMS[activeMatrixIndex].desc}
+              </p>
+            </div>
+
+            <p className="text-stone-400 text-xs italic border-l border-white/10 pl-3">
               "Every curve is a canvas. Visualize your dream build before the first cut is made."
             </p>
           </div>
         </section>
 
-        {/* Section 3: FIXED IMAGE INFINITE RUNNING MARQUEE LINE [BALANCED SIZES] */}
-        <section className="h-[40vh] flex flex-col justify-center items-center">
-          <div ref={brandSliderRef} className="w-full pointer-events-auto py-10 border-y border-white/5 bg-black/5 backdrop-blur-md overflow-hidden relative">
-
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
-
-            <span className="text-[8px] font-mono font-bold tracking-[0.4em] text-stone-600 uppercase block mb-6 text-center">
-              DEPLOYED ESTABLISHED INDUSTRY EQUIPMENT INTERACTIVE PIPELINE //
-            </span>
-
-            <div className="w-full overflow-hidden flex">
-              <div className="animate-marquee flex items-center gap-28 select-none">
-                {/* Loop 1 */}
-                {brandImages.map((brand, i) => (
-                  <div
-                    key={`img1-${i}`}
-                    className={`h-8 flex items-center justify-center transition-all duration-500 transform hover:scale-110 opacity-75 hover:opacity-100 group ${brand.sizeClass}`}
-                  >
-                    <img
-                      src={brand.src}
-                      alt={brand.name}
-                      className="h-full w-full object-contain pointer-events-none grayscale contrast-[110%] brightness-[1.4]"
-                    />
-                  </div>
-                ))}
-                {/* Loop 2 Duplicate for seamless endless looping */}
-                {brandImages.map((brand, i) => (
-                  <div
-                    key={`img2-${i}`}
-                    className={`h-8 flex items-center justify-center transition-all duration-500 transform hover:scale-110 opacity-75 hover:opacity-100 group ${brand.sizeClass}`}
-                  >
-                    <img
-                      src={brand.src}
-                      alt={brand.name}
-                      className="h-full w-full object-contain pointer-events-none grayscale contrast-[110%] brightness-[1.4]"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Section 4: CONNECT HQ HUB ZONE */}
+        {/* Section 3: CONNECT HQ HUB ZONE (WITH LIVE SLOTS COUNTER) */}
         <section className="h-screen flex flex-col justify-center items-center">
           <div ref={connectHubRef} className="pointer-events-auto w-full max-w-5xl bg-black/40 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col md:flex-row">
             <div className="w-full md:w-[45%] h-64 md:h-auto min-h-[250px] bg-stone-950 relative filter grayscale-[80%] contrast-[110%] invert-[5%] hover:grayscale-0 transition-all duration-700">
@@ -341,6 +365,20 @@ export default function PorscheShowcase() {
                 <p className="text-stone-400 text-xs leading-relaxed mb-6 font-medium">
                   Locate our elite physical tuning garage in Colombo or synchronize with us across our digital handles.
                 </p>
+
+                {/* LIVE SLOTS REMAINING NOTIFIER URGENCY CARD */}
+                <div className="mb-6 flex items-center gap-3 bg-red-950/30 border border-red-500/20 p-3 rounded-xl animate-pulse">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]" />
+                  <div className="flex-1">
+                    <span className="text-[9px] font-mono font-bold text-red-400 uppercase tracking-widest block flex items-center gap-1">
+                      <Flame size={10} /> CRITICAL AVAILABILITY ALERT
+                    </span>
+                    <p className="text-[11px] text-stone-200 font-bold mt-0.5">
+                      Only <span className="text-red-400 text-xs font-black font-mono">{slotsRemaining}</span> Custom Build Slots Left For This Month!
+                    </p>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-white/5 pt-4 mb-6">
                   <div className="flex flex-col gap-1.5">
                     <h4 className="text-[9px] font-extrabold text-stone-500 tracking-widest uppercase">HQ CONNECTIONS</h4>
