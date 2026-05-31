@@ -1,0 +1,14 @@
+# Node modules (Local node packages)
+node_modules/
+
+# Environment variables (Contains sensitive keys & passwords)
+.env
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
